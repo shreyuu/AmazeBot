@@ -4,7 +4,7 @@ AmazeBot is an AI-powered chatbot built with **Django (Backend)**, **React.js (F
 
 ## **🔗 Live Demo**
 
-🚀 [AmazeBot Live](https://your-live-demo-link.com) *(Not depolyed yet, Will update once deployed)*
+🚀 [AmazeBot Live](https://your-live-demo-link.com) _(Not depolyed yet, Will update once deployed)_
 
 ## **📌 Features**
 
@@ -13,7 +13,7 @@ AmazeBot is an AI-powered chatbot built with **Django (Backend)**, **React.js (F
 ✅ **React.js + Tailwind CSS** frontend for a sleek UI  
 ✅ **Real-time conversation experience**  
 ✅ **CORS enabled for seamless frontend-backend communication**  
-✅ **Future Enhancements**: WebSockets, Chat History, Authentication, and Speech-to-Text  
+✅ **Future Enhancements**: WebSockets, Chat History, Authentication, and Speech-to-Text
 
 ---
 
@@ -38,7 +38,7 @@ AmazeBot is an AI-powered chatbot built with **Django (Backend)**, **React.js (F
 
 ## **📂 Project Structure**
 
-```
+```plaintext
 amazebot/
 │── backend/      # Django Backend
 │── frontend/     x # React Frontend
@@ -91,7 +91,9 @@ npm start  # Runs on localhost:3000
 #### **Update API Endpoint in `frontend/src/components/Chatbot.js`**
 
 ```javascript
-const res = await axios.post("http://127.0.0.1:8000/api/chat/", { message: input });
+const res = await axios.post("http://127.0.0.1:8000/api/chat/", {
+  message: input,
+});
 ```
 
 ---
@@ -109,7 +111,9 @@ const res = await axios.post("http://127.0.0.1:8000/api/chat/", { message: input
 #### **Update API Endpoint for Production**
 
 ```javascript
-const res = await axios.post("https://your-api-url.com/api/chat/", { message: input });
+const res = await axios.post("https://your-api-url.com/api/chat/", {
+  message: input,
+});
 ```
 
 ---
@@ -119,13 +123,13 @@ const res = await axios.post("https://your-api-url.com/api/chat/", { message: in
 ✅ WebSockets for real-time messaging  
 ✅ JWT-based Authentication for users  
 ✅ Chat history with database storage  
-✅ Speech-to-text and text-to-speech integration  
+✅ Speech-to-text and text-to-speech integration
 
 ---
 
 ## **📄 License**
 
-MIT License © 2025 Shreyash Meshram  
+MIT License © 2025 Shreyash Meshram
 
 ---
 
@@ -146,6 +150,6 @@ Pull requests are welcome! For major changes, please open an issue first to disc
 💼 **Shreyash Meshram**  
 🔗 [LinkedIn](https://www.linkedin.com/in/shreyuu/)  
 🐙 [GitHub](https://github.com/shreyuu/)  
-📧 Email: <your-email@example.com>  
+📧 Email: <your-email@example.com>
 
 **Give this repo a ⭐ if you like it!** 🚀
