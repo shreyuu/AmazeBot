@@ -2,6 +2,13 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import './App.css';
 
+const axiosInstance = axios.create({
+  baseURL: 'http://localhost:8000/api/',
+  headers: {
+    'Content-Type': 'application/json'
+  }
+});
+
 function App() {
   const [message, setMessage] = useState('');
   const [response, setResponse] = useState('');
@@ -14,12 +21,16 @@ function App() {
     setError('');
 
     try {
-      const result = await axios.post('http://localhost:8000/api/chat/', {
+      const result = await axiosInstance.post('chat/', {
         message: message
       });
       setResponse(result.data.response);
     } catch (err) {
-      setError(err.response?.data?.error || 'An error occurred');
+      setError(
+        err.response?.data?.error ||
+        err.message ||
+        'An unexpected error occurred'
+      );
     } finally {
       setIsLoading(false);
     }
