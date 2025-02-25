@@ -46,13 +46,14 @@ def make_api_request_with_retry(url, headers, payload, max_retries=3, delay=2):
 
 @api_view(['POST'])
 def chatbot_response(request):
-    throttle = ChatbotRateThrottle()
-    if not throttle.allow_request(request, None):
-        logger.warning("Rate limit exceeded")
-        return JsonResponse({
-            "error": "Rate limit exceeded",
-            "detail": "Please wait a moment before trying again"
-        }, status=429)
+    # Remove or comment out these lines
+    # throttle = ChatbotRateThrottle()
+    # if not throttle.allow_request(request, None):
+    #     logger.warning("Rate limit exceeded")
+    #     return JsonResponse({
+    #         "error": "Rate limit exceeded",
+    #         "detail": "Please wait a moment before trying again"
+    #     }, status=429)
 
     user_message = request.data.get("message", "")
     if not user_message:
