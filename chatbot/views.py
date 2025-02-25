@@ -1,15 +1,14 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
-from openai import OpenAI
+import requests
 import os
 from pathlib import Path
 from dotenv import load_dotenv
 import logging
-import time
 from django.core.cache import cache
 from rest_framework.throttling import UserRateThrottle
-from tenacity import retry, stop_after_attempt, wait_exponential
+import time
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -22,34 +21,37 @@ load_dotenv(dotenv_path=ENV_FILE)
 logger.info(f"Looking for .env file at: {ENV_FILE}")
 
 # Verify API key is loaded
-api_key = os.getenv('OPENAI_API_KEY')
+api_key = os.getenv('HUGGINGFACE_API_KEY')
 if not api_key:
-    logger.error("OPENAI_API_KEY not found in environment variables")
-    raise ValueError("OPENAI_API_KEY not found in environment variables")
+    logger.error("HUGGINGFACE_API_KEY not found in environment variables")
+    raise ValueError("HUGGINGFACE_API_KEY not found in environment variables")
 logger.info("API key loaded successfully")
 
-# Initialize OpenAI client with retry mechanism
-@retry(
-    stop=stop_after_attempt(3),
-    wait=wait_exponential(multiplier=1, min=4, max=10)
-)
-def create_chat_completion(messages):
-    client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
-    return client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=messages
-    )
-
 class ChatbotRateThrottle(UserRateThrottle):
-    rate = '3/minute'  # Reduced rate to prevent quota issues
+    rate = '1/second'  # Adjust rate limit to be more conservative
+
+def make_api_request_with_retry(url, headers, payload, max_retries=3, delay=2):
+    """Helper function to handle retries with exponential backoff"""
+    for attempt in range(max_retries):
+        try:
+            response = requests.post(url, headers=headers, json=payload)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            if attempt == max_retries - 1:
+                raise
+            wait_time = delay * (2 ** attempt)
+            logger.warning(f"Attempt {attempt + 1} failed. Retrying in {wait_time} seconds...")
+            time.sleep(wait_time)
 
 @api_view(['POST'])
 def chatbot_response(request):
     throttle = ChatbotRateThrottle()
     if not throttle.allow_request(request, None):
+        logger.warning("Rate limit exceeded")
         return JsonResponse({
             "error": "Rate limit exceeded",
-            "detail": "Too many requests. Please try again later."
+            "detail": "Please wait a moment before trying again"
         }, status=429)
 
     user_message = request.data.get("message", "")
@@ -61,39 +63,29 @@ def chatbot_response(request):
     
     try:
         # Check cache first
-        cache_key = f"chatbot_response_{hash(user_message)}"
+        cache_key = f"chat_response_{hash(user_message)}"
         cached_response = cache.get(cache_key)
         if cached_response:
             logger.info("Returning cached response")
             return JsonResponse({"response": cached_response})
 
-        logger.info("Attempting to create chat completion")
-        messages = [
-            {"role": "system", "content": "You are a helpful assistant."},
-            {"role": "user", "content": user_message}
-        ]
+        logger.info("Making API request to Hugging Face")
+        API_URL = "https://api-inference.huggingface.co/models/facebook/blenderbot-400M-distill"
+        headers = {"Authorization": f"Bearer {os.getenv('HUGGINGFACE_API_KEY')}"}
+        payload = {"inputs": user_message}
+
+        # Make API request with retry logic
+        response_data = make_api_request_with_retry(API_URL, headers, payload)
+        response_content = response_data[0]['generated_text']
+
+        # Cache successful response
+        cache.set(cache_key, response_content, timeout=300)  # Cache for 5 minutes
         
-        response = create_chat_completion(messages)
-        response_content = response.choices[0].message.content
-        
-        # Cache successful responses for 10 minutes
-        cache.set(cache_key, response_content, 600)
-        
-        logger.info("Successfully received response from OpenAI")
         return JsonResponse({"response": response_content})
-        
+
     except Exception as e:
-        error_message = str(e)
-        logger.error(f"OpenAI API error: {error_message}")
-        
-        if "insufficient_quota" in error_message:
-            logger.error("Quota exceeded error detected")
-            return JsonResponse({
-                "error": "Service temporarily unavailable",
-                "detail": "We're experiencing high demand. Please try again later."
-            }, status=503)
-        
+        logger.error(f"Error processing request: {str(e)}")
         return JsonResponse({
-            "error": "Internal server error",
-            "detail": "An unexpected error occurred"
-        }, status=500)
+            "error": "Service unavailable",
+            "detail": "Please try again later"
+        }, status=503)

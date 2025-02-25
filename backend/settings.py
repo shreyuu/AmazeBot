@@ -148,13 +148,13 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.UserRateThrottle'
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'user': '3/minute'
+        'user': '1/second'
     }
 }
 
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'TIMEOUT': 600,  # 10 minutes
+        'TIMEOUT': 300,  # 5 minutes default timeout
     }
 }
