@@ -142,3 +142,19 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels.layers.InMemoryChannelLayer"
     }
 }
+
+REST_FRAMEWORK = {
+    'DEFAULT_THROTTLE_CLASSES': [
+        'chatbot.throttling.ChatbotRateThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'user': '10/second',
+    }
+}
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'TIMEOUT': 300,  # 5 minutes default timeout
+    }
+}
