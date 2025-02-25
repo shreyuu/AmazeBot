@@ -145,10 +145,10 @@ CHANNEL_LAYERS = {
 
 REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_CLASSES': [
-        'rest_framework.throttling.UserRateThrottle'
+        'chatbot.throttling.ChatbotRateThrottle',
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'user': '1/second'
+        'user': '10/second',
     }
 }
 

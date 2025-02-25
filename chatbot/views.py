@@ -9,6 +9,7 @@ import logging
 from django.core.cache import cache
 from rest_framework.throttling import UserRateThrottle
 import time
+from .throttling import ChatbotRateThrottle
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -27,8 +28,6 @@ if not api_key:
     raise ValueError("HUGGINGFACE_API_KEY not found in environment variables")
 logger.info("API key loaded successfully")
 
-class ChatbotRateThrottle(UserRateThrottle):
-    rate = '1/second'  # Adjust rate limit to be more conservative
 
 def make_api_request_with_retry(url, headers, payload, max_retries=3, delay=2):
     """Helper function to handle retries with exponential backoff"""
@@ -46,14 +45,13 @@ def make_api_request_with_retry(url, headers, payload, max_retries=3, delay=2):
 
 @api_view(['POST'])
 def chatbot_response(request):
-    # Remove or comment out these lines
-    # throttle = ChatbotRateThrottle()
-    # if not throttle.allow_request(request, None):
-    #     logger.warning("Rate limit exceeded")
-    #     return JsonResponse({
-    #         "error": "Rate limit exceeded",
-    #         "detail": "Please wait a moment before trying again"
-    #     }, status=429)
+    throttle = ChatbotRateThrottle()
+    if not throttle.allow_request(request, None):
+        logger.warning("Rate limit exceeded")
+        return JsonResponse({
+            "error": "Rate limit exceeded",
+            "detail": "Please wait a moment before trying again"
+        }, status=429)
 
     user_message = request.data.get("message", "")
     if not user_message:
