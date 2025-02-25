@@ -2,13 +2,15 @@ name: Frontend CI
 
 on:
   push:
+    branches:
+      - "**"
     paths:
       - "frontend/**"
-    branches: [main]
   pull_request:
+    branches:
+      - "**"
     paths:
       - "frontend/**"
-    branches: [main]
 
 jobs:
   build:
