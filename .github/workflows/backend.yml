@@ -2,15 +2,17 @@ name: Backend CI
 
 on:
   push:
+    branches:
+      - "**"
     paths:
       - "backend/**"
       - "chatbot/**"
-    branches: [main]
   pull_request:
+    branches:
+      - "**"
     paths:
       - "backend/**"
       - "chatbot/**"
-    branches: [main]
 
 jobs:
   test:
