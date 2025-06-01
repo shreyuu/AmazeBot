@@ -5,10 +5,6 @@
 
 AmazeBot is an AI-powered chatbot built with **Django (Backend)**, **React.js (Frontend)**, and **Tailwind CSS**. It leverages **Hugging Face's Blenderbot model** to provide intelligent and engaging conversations.
 
-## **🔗 Live Demo**
-
-🚀 [AmazeBot Live](https://your-live-demo-link.com) _(Not depolyed yet, Will update once deployed)_
-
 ## **📌 Features**
 
 ✅ AI-powered chatbot with **Hugging Face Blenderbot**  
