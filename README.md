@@ -36,7 +36,6 @@ AmazeBot is an AI-powered chatbot built with **Django (Backend)**, **React.js (F
 - React.js
 - Tailwind CSS
 - Axios (for API calls)
-- Vercel / Netlify (for deployment)
 
 ---
 
