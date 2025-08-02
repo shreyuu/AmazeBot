@@ -277,7 +277,3 @@ Pull requests are welcome! For major changes, please open an issue first to disc
 🔗 [LinkedIn](https://www.linkedin.com/in/shreyuu/)  
 🐙 [GitHub](https://github.com/shreyuu/)  
 📧 [Email](mailto:shreyashmeshram0031@gmail.com)
-
----
-
-_Last updated: Feburary 2025_
